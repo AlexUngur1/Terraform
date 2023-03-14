@@ -1,48 +1,45 @@
-# This is a minimal list, OK to add things per repo
-# mac specific
+*.dll
+*.exe
 .DS_Store
-.ansible
-.azure/
-.bash_history
-# don't check storage creds into GH
-.boto
-.cache
-*.code-workspace
-#  may contain gcloud files
-.config
-.gitconfig
-.local
-# .netrc contains secrets for service tokens
-.netrc
-.plan
-.sentinel
-# .ssh dir may contain private keys
-.ssh
-.terrascan
-# Terraform dot files
-.terraform
-.terraform/*
-.terraformrc
-**/.terraform/*
-.terraform.d
-*.tfstate
-.tfstate.
+example.tf
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+terraform.tfplan
+terraform.tfstate
+bin/
+dist/
+modules-dev/
+/pkg/
+website/.vagrant
+website/.bundle
+website/build
+website/node_modules
+.vagrant/
+*.backup
+./*.tfstate
+.terraform/
+*.log
+*.bak
+*~
+.*.swp
+.idea
 .vscode
-.idea
-.idea
+*.iml
+*.test
+*.iml
+log.txt
+markdown-link-check*.txt
+changelog.tmp
+terraform-provider-aws
+aws/testdata/service/cloudformation/examplecompany-exampleservice-exampleresource/bin/handler
 
-# Palo auth codes
-authcodes
-# Crash log files
-crash.log
-credentials.json
-# Palo specific
-init-cfg.txt
-temp
-terraform.rc
-tmp
-# Auto variables
-terraform.tfvars
-terraform.tfvars.json
-*.auto.tfvars
-*.auto.tfvars.json
+# Test exclusions
+!command/test-fixtures/**/*.tfstate
+!command/test-fixtures/**/.terraform/
+
+# Keep windows files with windows line endings
+*.winfile eol=crlf
+/.vs
+node_modules
+
+.teamcity/target
