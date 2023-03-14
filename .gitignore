@@ -23,7 +23,7 @@
 .terraform
 .terraform/*
 .terraformrc
-**/.terraform/
+**/.terraform/*
 .terraform.d
 *.tfstate
 .tfstate.
