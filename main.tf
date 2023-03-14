@@ -13,15 +13,23 @@ provider "aws" {
   region = "eu-central-1"
 }
 
-# resource "aws_s3_bucket" "b" {
-#   bucket = "my-tf-test-bucket-alexungur1"
-#   tags = {
-#     Name        = "My bucket"
-#     Environment = "Dev"
-#   }
-# }
+module "ec2_instance" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "~> 3.0"
 
-# resource "aws_s3_bucket_acl" "example" {
-#   bucket = aws_s3_bucket.b.id
-#   acl    = "private"
-# }
+  for_each = toset(["one", "two", "three"])
+
+  name = "instance-${each.key}"
+
+  ami                    = "ami-ebd02392"
+  instance_type          = "t2.micro"
+  key_name               = "user1"
+  monitoring             = true
+  vpc_security_group_ids = ["sg-12345678"]
+  subnet_id              = "subnet-eddcdzz4"
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
