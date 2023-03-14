@@ -17,12 +17,12 @@ module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 3.0"
 
-  for_each = toset(["one", "two", "three"])
+#   for_each = toset(var.ec2_instances)
+    for_each = local.environments["dev"]
+  name = each.value.name
 
-  name = "instance-${each.key}"
-
-  ami                    = "ami-ebd02392"
-  instance_type          = "t2.micro"
+  ami                    = each.value.ami
+  instance_type          = each.value.instance
   key_name               = "user1"
   monitoring             = true
   vpc_security_group_ids = ["sg-12345678"]
@@ -32,4 +32,21 @@ module "ec2_instance" {
     Terraform   = "true"
     Environment = "dev"
   }
+}
+
+locals{
+   environments = {
+      dev = {
+         "VM1" = {
+            name  = "work2"
+            ami = "ami-0233214e13e500f77"
+            instance = "t2.micro"
+         }
+         "VM2" = {
+            name  = "work2"
+            ami = "ami-0233214e13e500f77"
+            instance = "t2.micro"
+         }
+      }
+   }
 }
