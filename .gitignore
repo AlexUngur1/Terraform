@@ -21,6 +21,7 @@
 .terrascan
 # Terraform dot files
 .terraform
+.terraform/*
 .terraformrc
 **/.terraform/
 .terraform.d
