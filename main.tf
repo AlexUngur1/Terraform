@@ -13,50 +13,46 @@ provider "aws" {
   region = "eu-central-1"
 }
 
-module "ec2_instance" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~> 3.0"
+resource "aws_vpc" "my_vpc" {
+  cidr_block = "10.0.0.0/16"
+}
 
-#   for_each = toset(var.ec2_instances)
-    for_each = local.environments["dev"]
-  name = try(each.value.name, "vm-${random_string.random_name.result}")
+resource "aws_subnet" "my_subnet" {
+  cidr_block = "10.0.1.0/24"
+  vpc_id     = aws_vpc.my_vpc.id
+}
 
-  ami                    = try(each.value.ami, "ami-0233214e13e500f77")
-  instance_type          = try(each.value.instance, "t2.micro")
-  key_name               = "user1"
-  monitoring             = true
-  vpc_security_group_ids = ["sg-12345678"]
-  subnet_id              = "subnet-eddcdzz4"
-
+resource "aws_instance" "my_instance" {
+  count         = var.vm_count
+  ami           = var.vm_image
+  instance_type = var.vm_flavor
+  subnet_id     = aws_subnet.my_subnet.id
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
+    Name = "my-vm-${count.index}"
   }
 }
 
-locals{
-   environments = {
-      dev = {
-         "VM1" = {
-            name  = "work1"
-            ami = "ami-0233214e13e500f77"
-            instance = "t2.micro"
-         }
-         "VM2" = {
-            name  = "work2"
-            ami = "ami-0233214e13e500f77"
-            instance = "t2.micro"
-         }
-         "VM3" = {
-            # name  = "work3"
-            instance = "t2.micro"
-         }
-      }
-   }
+resource "random_password" "vm_password" {
+  length  = 16
+  special = true
+  override_special = "/\\()\"'"
+  count   = var.vm_count
 }
 
-resource "random_string" "random_name" {
-  length           = 16
-  special          = true
-  override_special = "/@£$"
+resource "null_resource" "ping_vms" {
+  count = length(aws_instance.my_instance)
+
+  provisioner "local-exec" {
+    command = "ping -c 1 ${aws_instance.my_instance[(count.index + 1) % length(aws_instance.my_instance)].private_ip}; echo $? > /tmp/ping_${count.index}.txt || true"
+  }
 }
+
+# output "ping_results" {
+#   value = [
+#     for f in fileset(".", "ping_*.txt") :
+#     {
+#       filename = f
+#       contents = file(f)
+#     }
+#   ]
+# }
